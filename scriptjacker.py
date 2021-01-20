@@ -1,17 +1,20 @@
-import os
 import random
 import shutil
 import subprocess as sp
 import sys
 
 import click
+from colorama import Fore, init
 from flask import Flask, jsonify
+from pyfiglet import Figlet
 
 import bytemanip as bm
 import encoders
 
 click.arg = click.argument
 app = Flask("Microsoft Update Beta Platform")  # Windows insider
+__version__ = "1.0.0"
+init(autoreset=True)
 
 
 def exegen(output):
@@ -90,8 +93,11 @@ def generatepayload(filetype, output):
 
 
 @click.group()
-def main():
-    pass
+@click.option("--no-banner", "no_banner", is_flag=True)
+def main(no_banner):
+    if no_banner == 0:
+        f = Figlet(font="banner3-D")
+        print(Fore.GREEN + f.renderText("Scriptjacker Version " + __version__))
 
 
 @main.command()
