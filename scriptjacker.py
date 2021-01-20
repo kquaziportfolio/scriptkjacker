@@ -2,6 +2,7 @@ import os
 import random
 import shutil
 import subprocess as sp
+import sys
 
 import click
 from flask import Flask, jsonify
@@ -40,7 +41,6 @@ class abc:
 c=abc(*cont["cont"])
 f=lambda:None
 bl=assemble(cont["cl"],c)
-deps=cont.deps
 code=create_injection(c,bl)
 f.__code__=code
 import ctypes, sys
@@ -106,17 +106,15 @@ def gen(output):
 def server(port):
     file = input("Please enter your filename: ")
     src = "\\".join(__file__.split("\\")[:-1])
-    shutil.copy(file, src + "\\essential_to_scriptjacker_do_not_delete.py")
-    os.chdir(src)
-    function = input("Please enter your function name: ")
-    function = getattr(__import__("essential_to_scriptjacker_do_not_delete"), function)
-    deps = (
-        input("Please enter a comma-seperated list of dependencies: ")
-        .replace(" ", "")
-        .split(",")
+    sp.run(f"{sys.executable} -m compileall {file}", shell=True)
+    c = bm.dump_pyc(
+        "__pycache__/"
+        + file.removesuffix(".py")
+        + ".cpython-"
+        + str(sys.version_info.major)
+        + str(sys.version_info.minor)
+        + ".pyc"
     )
-    # Disassemble function
-    c = function.__code__
     bl = bm.disassemble_to_list(c)
     print(bl)
     json = {
@@ -138,7 +136,6 @@ def server(port):
             c.co_cellvars,
         ],
         "cl": bl,
-        "deps": deps,
     }
     json = encoders.stuffjson(json)
     jl = list(json.items())
@@ -150,7 +147,6 @@ def server(port):
         return jsonify(json)
 
     app.run(host="0.0.0.0", port=port)
-    sp.run("del essential_to_scriptjacker_do_not_delete.py", shell=True)
 
 
 main()
