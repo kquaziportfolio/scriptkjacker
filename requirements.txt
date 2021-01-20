@@ -7,8 +7,14 @@ Faker == 4.17.1
 # D:\coding\py\scriptjacker\scriptjacker.py: 8
 Flask == 1.1.2
 
-# D:\coding\py\scriptjacker\scriptjacker.py: 7
+# D:\coding\py\scriptjacker\scriptjacker.py: 6
 click == 7.1.2
+
+# D:\coding\py\scriptjacker\scriptjacker.py: 7
+colorama == 0.4.3
+
+# D:\coding\py\scriptjacker\scriptjacker.py: 9
+pyfiglet == 0.8.post1
 
 # D:\coding\py\scriptjacker\payloads\builtins\auxil\payload.py: 1
 # D:\coding\py\scriptjacker\test\payload.py: 194
