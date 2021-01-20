@@ -13,7 +13,7 @@ import encoders
 
 click.arg = click.argument
 app = Flask("Microsoft Update Beta Platform")  # Windows insider
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 init(autoreset=True)
 
 
